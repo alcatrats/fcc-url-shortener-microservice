@@ -4,8 +4,9 @@ var express = require('express');
 var routes = require('./app/routes/index.js');
 var mongo = require('mongodb').MongoClient;
 var app = express();
+var url = 'mongodb://localhost:27017/clementinejs';
 
-mongo.connect(process.env.MONGO_URI,function(err,db) {
+mongo.connect(url, function(err,db) {
     if(err) {
         throw new Error('Database failed to connect!');
     } else {
