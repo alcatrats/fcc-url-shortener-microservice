@@ -1,7 +1,7 @@
 {
-  "name": "clementinejs-fcc",
+  "name": "fCC URL Shortener Challenge",
   "version": "1.0.1",
-  "description": "The elegant and lightweight boilerplate for full stack JavaScript.",
+  "description": "freeCodeCamp URL Shortener Microservice challenge",
   "main": "server.js",
   "repository": {
     "type": "git",
@@ -13,26 +13,18 @@
   },
   "keywords": [
     "MongoDB",
-    "Mongoose",
-    "full stack",
     "Express",
     "Node",
     "javascript",
-    "boilerplate"
   ],
   "scripts": {
     "start": "node server.js"
   },
-  "author": "Blake Johnston",
+  "author": "Alex Evans",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^1.2.0",
     "express": "^4.12.4",
-    "express-session": "^1.11.3",
-    "mongoose": "^4.1.0",
     "mongodb": "^2.1.7",
-    "passport": "^0.3.0",
-    "passport-github": "^1.0.0"
   },
   "devDependencies": {}
 }

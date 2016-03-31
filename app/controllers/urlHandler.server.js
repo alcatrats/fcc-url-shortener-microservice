@@ -8,48 +8,45 @@ function urlHandler(db) {
 
         var orgUrl = req.url.substring(5);
         var idSeq = 0;
+        var shrtUrl = "https://url-shortener-microservice-alcatrats.c9users.io/";
+        var re = new RegExp('^(https?:\/\/)?');
 
-        // if orginal URL exists already in db return that seq otherwise add a new entry
-        var urlMatch = urls.findOne({"url": orgUrl});
-        var lastSeq = urls.findOne({}, {sort:{$natural:-1}});
-        
-        if(typeof urlMatch._id == "number") {
-            idSeq = urlMatch._id;
-        } else if(typeof lastSeq._id == "number") {
-            idSeq = lastSeq + 1;
+        if(re.test(orgUrl)) {
+            throw "Bad Url";
         }
-        
-        var shrtUrl = "https://url-shortener-microservice-alcatrats.c9users.io/" + idSeq;
-        
-        urls.insert(
-            {
-                _id: idSeq,
-                url: orgUrl
-            }
-        );
 
-        res.json({"original_url": orgUrl, "short_url": shrtUrl, "match": urlMatch, "last": lastSeq._id});
-        
-/*        
-        urls.findOne({}, {sort:{$natural:-1}}, function(err, urlFnd) {
+        urls.findOne({"storeUrl": orgUrl}, {}, function(err, existingUrl) {
             if(err) {throw err;}
-
-            var idSeq = 0;
-            if(typeof urlFnd._id == "number") {
-                idSeq = urlFnd._id + 1;
-            }
-            var shrtUrl = "https://url-shortener-microservice-alcatrats.c9users.io/" + idSeq;
             
-            urls.insert(
-                {
-                    _id: idSeq,
-                    url: orgUrl
-                }
-            );
+            if(existingUrl) {
+                shrtUrl += existingUrl._id;
+                res.json({"original_url": orgUrl, "short_url": shrtUrl});
 
+            } else {
+            
+                urls.findOne({}, {sort:{$natural:-1}}, function(err, lastUrl) {
+                    if(err) {throw err;}
+                
+                    if(lastUrl) {
+                        idSeq = lastUrl._id + 1;
+                    }
+                
+                    shrtUrl += idSeq;
+                    
+                    urls.insert(
+                        {
+                            _id: idSeq,
+                            storeUrl: orgUrl
+                        }
+                    );
+
+                    res.json({"original_url": orgUrl, "short_url": shrtUrl});
+                
+                
+                });
+            }
+            
         });
-*/
-
     };
     
     this.badUrl = function(req, res) {
@@ -57,7 +54,25 @@ function urlHandler(db) {
     };
     
     this.getRedirectUrl = function(req, res) {
-        res.json("test");
+        
+        var srchId = parseInt(req.params.id, 10);
+
+        if(isNaN(srchId)) {
+            res.json("Bad Parameter, not a number" + req.params.id);
+
+        } else {
+        
+            urls.findOne({"_id": srchId}, {}, function(err, urlFnd) {
+                if(err) {throw err;}
+            
+                 if(urlFnd) {
+                      res.redirect(urlFnd.storeUrl);
+                 } else {
+                     res.json("URL not found");
+                }
+            });
+        
+        }
     };
     
 }

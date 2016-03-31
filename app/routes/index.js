@@ -12,16 +12,13 @@ module.exports = function (app, db) {
 			res.sendFile(path + '/public/index.html');
 		});
 		
-	app.route('/new/http://:site')
+	app.route('/new/*')
 		.get(urlHandler.getShortUrl);
-		
-	app.route('/new/https://:site')
-		.get(urlHandler.getShortUrl);
-	
- 	app.route('/new/:site')
- 		.get(urlHandler.badUrl);
 
- 	app.route('/:id')
- 		.get(urlHandler.getRedirectUrl);
+	app.route('/new/')
+		.get(urlHandler.badUrl);
+
+  	app.route('/:id')
+  		.get(urlHandler.getRedirectUrl);
 };
 
