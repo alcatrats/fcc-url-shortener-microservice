@@ -9,44 +9,45 @@ function urlHandler(db) {
         var orgUrl = req.url.substring(5);
         var idSeq = 0;
         var shrtUrl = "https://url-shortener-microservice-alcatrats.c9users.io/";
-        var re = new RegExp('^(https?:\/\/)?');
+        var re = new RegExp('^(https?:\/\/)');
 
-        if(re.test(orgUrl)) {
+        if(re.test(orgUrl) == false) {
             throw "Bad Url";
-        }
+        } else {
 
-        urls.findOne({"storeUrl": orgUrl}, {}, function(err, existingUrl) {
-            if(err) {throw err;}
+            urls.findOne({"storeUrl": orgUrl}, {}, function(err, existingUrl) {
+                if(err) {throw err;}
             
-            if(existingUrl) {
-                shrtUrl += existingUrl._id;
-                res.json({"original_url": orgUrl, "short_url": shrtUrl});
-
-            } else {
-            
-                urls.findOne({}, {sort:{$natural:-1}}, function(err, lastUrl) {
-                    if(err) {throw err;}
-                
-                    if(lastUrl) {
-                        idSeq = lastUrl._id + 1;
-                    }
-                
-                    shrtUrl += idSeq;
-                    
-                    urls.insert(
-                        {
-                            _id: idSeq,
-                            storeUrl: orgUrl
-                        }
-                    );
-
+                if(existingUrl) {
+                    shrtUrl += existingUrl._id;
                     res.json({"original_url": orgUrl, "short_url": shrtUrl});
-                
-                
-                });
-            }
+    
+                } else {
             
-        });
+                    urls.findOne({}, {sort:{$natural:-1}}, function(err, lastUrl) {
+                        if(err) {throw err;}
+                    
+                        if(lastUrl) {
+                            idSeq = lastUrl._id + 1;
+                        }
+                
+                        shrtUrl += idSeq;
+                    
+                        urls.insert(
+                            {
+                                _id: idSeq,
+                                storeUrl: orgUrl
+                            }
+                        );
+
+                        res.json({"original_url": orgUrl, "short_url": shrtUrl});
+                
+                
+                    });
+                }
+            
+            });
+        }
     };
     
     this.badUrl = function(req, res) {
